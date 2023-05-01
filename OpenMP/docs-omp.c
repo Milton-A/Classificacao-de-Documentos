@@ -23,7 +23,7 @@ Documento* lerFicheiro(char str[], char DD[]){
     fp = fopen(str, "r");
     fscanf(fp, "%d %d %d", &C, &D, &S);
 
-    if(DD != NULL)
+    if(DD != NULL && DD <= D)
         D = atoi(DD);
 
    Documento* vetorDocumentos = (Documento*) malloc(D * sizeof(Documento));
