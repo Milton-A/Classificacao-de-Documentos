@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <string.h>
 #include <omp.h>
 
 int C, D, S;
@@ -17,10 +18,13 @@ typedef struct Armario{
 
 Documento* lerFicheiro();
 
-Documento* lerFicheiro(char str[]){
+Documento* lerFicheiro(char str[], char DD[]){
 	FILE* fp;
     fp = fopen(str, "r");
     fscanf(fp, "%d %d %d", &C, &D, &S);
+
+    if(DD != NULL)
+        D = atoi(DD);
 
    Documento* vetorDocumentos = (Documento*) malloc(D * sizeof(Documento));
 
@@ -96,9 +100,25 @@ Documento* moverDocumento(Armario* arm, Documento* doc){
     return doc;
 }
 
-void gravarSaida( Documento* vetorDocumentos) {
+void replace(char *str) {
+    int i, j = 0, k = 0;
+    char out[10] = ".out";
+    int len_str = strlen(str);
+    
+    for (i = 0; i <= len_str+1; i++) {
+        if (str[i] == '.') {
+            j = 1;
+        }
+        if(j == 1){
+            str[i] = out[k];
+            k++;
+        }
+    }
+}
+
+void gravarSaida( Documento* vetorDocumentos, char str[]) {
     FILE* fp;
-    fp = fopen("docs.out", "w"); 
+    fp = fopen(str, "w"); 
     if (fp == NULL) {
         printf("Erro ao abrir o arquivo\n");
         return;
@@ -111,12 +131,11 @@ void gravarSaida( Documento* vetorDocumentos) {
 
 
 int main(int argc, char *argv[]) {
-    double start_time = omp_get_wtime();
 	Documento *doc;
     Armario* arm = NULL; // inicializa listaArmarios como NULL
     
     printf("A ler o documento...");
-	doc = lerFicheiro(argv[1]);
+	doc = lerFicheiro(argv[1], argv[2]);
 
     printf("A calcular as Medias");
 	arm = calcularMedias(doc);
@@ -125,11 +144,9 @@ int main(int argc, char *argv[]) {
 	doc = moverDocumento(arm, doc);
 	
     printf("Documentos Movidos!!");
-	imprimirDocumentos(doc);
-	gravarSaida(doc);
-
-    double end_time = omp_get_wtime();
-	printf("Tempo de execu��o: %f segundos\n", end_time - start_time);
+	//imprimirDocumentos(doc);
+	replace(argv[1]);
+	gravarSaida(doc, argv[1]);
 
     return 0;
 }
